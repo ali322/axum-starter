@@ -1,6 +1,8 @@
 use crate::lib::jwt::Auth;
 use axum::http::{Request, Response};
-use hyper::{body::HttpBody, http::StatusCode};
+use hyper::{body::HttpBody, http::StatusCode, Body as HyperBody, Error as HyperError, HeaderMap};
+use bytes::Bytes;
+use futures_util::ready;
 use pin_project::pin_project;
 use std::{
     future::Future,
@@ -48,6 +50,10 @@ where
             ResponseFuture::next(self.inner.call(req))
         } else {
             let body = ResBody::default();
+            let body = body.map_data(|v|{
+              // &b"hello world"[..]
+              "123".as_bytes()
+            }).into_inner();
             let resp = Response::builder()
                 .status(StatusCode::UNAUTHORIZED)
                 .body(body)
@@ -92,6 +98,7 @@ where
             KindProj::Future(future) => future.poll(cx),
             KindProj::Error(resp) => {
                 let resp = resp.take().unwrap();
+                // let resp = Response::new("hi");
                 Poll::Ready(Ok(resp))
             }
         }
@@ -111,4 +118,29 @@ impl<S> Layer<S> for RestrictedLayer {
     fn layer(&self, inner: S) -> Self::Service {
         Restricted::new(inner)
     }
+}
+
+pub struct RestrictBody{
+  inner: HyperBody
+}
+
+impl RestrictBody{
+  fn new(inner: HyperBody) -> Self{
+    Self{ inner }
+  }
+}
+
+impl HttpBody for RestrictBody{
+  type Data = Bytes;
+  type Error = HyperError;
+  fn poll_data(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Result<Self::Data, Self::Error>>> {
+      if let Some(chunk) = ready!(Pin::new(&mut self.inner).poll_data(cx)?) {
+          Poll::Ready(Some(Ok(chunk)))
+      } else {
+        Poll::Ready(None)
+      }
+  }
+  fn poll_trailers(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Result<Option<HeaderMap>, Self::Error>> {
+      Pin::new(&mut self.inner).poll_trailers(cx)
+  }
 }
