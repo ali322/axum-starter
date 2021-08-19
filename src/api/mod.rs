@@ -1,13 +1,13 @@
-use axum::{body::Body, prelude::*, route, routing::BoxRoute};
-use tower_http::auth::RequireAuthorizationLayer;
-
-async fn index() -> &'static str {
-    "hello world"
+macro_rules! reject {
+    ($e: expr) => {
+        crate::lib::APIErrror::Custom($e)
+    };
 }
 
-pub fn apply_routes() -> BoxRoute<Body> {
-    route("/", get(index)).layer(crate::layer::restricted::RestrictedLayer::new()).boxed()
-    // route("/", get(index))
-    //     .layer(RequireAuthorizationLayer::custom(Restrict::new()))
-    //     .boxed()
+macro_rules! reply {
+  ($t: tt) => {
+    axum::response::Json(serde_json::json!({"code":0, "data": $t}))
+  };
 }
+
+pub mod v1;
