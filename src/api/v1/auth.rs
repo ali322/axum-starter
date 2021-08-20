@@ -1,6 +1,6 @@
 use std::{sync::Arc};
 
-use crate::{api::v1::APIState, lib::APIResult, repository::user::*};
+use crate::{api::v1::APIState, lib::{APIResult, jwt::generate_token}, repository::user::*};
 use axum::{
     extract::{Extension, Json},
 };
@@ -16,7 +16,10 @@ pub async fn register(
       return Err(reject!("用户已存在"));
     }
     let user = body.create(&pool).await?;
-    Ok(reply!(user))
+    let token = generate_token(user.clone().id, user.clone().username);
+    Ok(reply!({
+      "token": token, "user": user,
+    }))
 }
 
 pub async fn login(
@@ -33,5 +36,8 @@ pub async fn login(
     return Err(reject!("密码不正确"));
   }
   let user = body.login(user.id, &pool).await?;
-  Ok(reply!(user))
+  let token = generate_token(user.clone().id, user.clone().username);
+  Ok(reply!({
+    "token": token, "user": user,
+  }))
 }

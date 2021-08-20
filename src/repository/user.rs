@@ -5,14 +5,16 @@ use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, query_as, query};
 use uuid::Uuid;
 use validator::Validate;
+use crate::lib::datetime_format::naive_datetime;
 
-#[derive(Debug, Serialize, FromRow)]
+#[derive(Debug, Clone, Serialize, FromRow)]
 pub struct User {
     pub id: String,
     pub username: String,
     #[serde(skip_serializing)]
     pub password: String,
     pub email: Option<String>,
+    #[serde(with = "naive_datetime")]
     pub last_logined_at: NaiveDateTime,
     pub created_at: NaiveDateTime,
 }

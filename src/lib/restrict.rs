@@ -1,59 +1,55 @@
-use std::{
-    marker::PhantomData,
-};
-
-use crate::lib::jwt::Auth;
-use hyper::{
-    body::HttpBody, http::StatusCode, Request,
-    Response
-};
-use tower_http::{auth::AuthorizeRequest};
+use crate::lib::jwt::{decode_token, Auth};
+use axum::body::{box_body, BoxBody};
+use hyper::{http::StatusCode, Body, Request, Response};
+use serde_json::json;
+use tower_http::auth::AuthorizeRequest;
 
 const AUTH_HEADER: &'static str = "Authorization";
 
-pub struct Restrict<ResBody> {
-    _ty: PhantomData<fn() -> ResBody>,
+#[derive(Debug, Clone)]
+pub struct Restrict {
+    reject_reason: Option<String>,
 }
 
-impl<ResBody> Restrict<ResBody> {
-    pub fn new() -> Self
-    where
-        ResBody: HttpBody + Default,
-    {
-        Self { _ty: PhantomData }
+impl Restrict {
+    pub fn new() -> Self {
+        Self { reject_reason: None }
     }
 }
 
-impl<ResBody> Clone for Restrict<ResBody> {
-    fn clone(&self) -> Self {
-        Self { _ty: PhantomData }
-    }
-}
-
-impl<ResBody> AuthorizeRequest for Restrict<ResBody>
-where
-    ResBody: HttpBody + Default,
-{
+impl AuthorizeRequest for Restrict {
     type Output = Auth;
-    type ResponseBody = ResBody;
+    type ResponseBody = BoxBody;
     fn authorize<B>(&mut self, req: &Request<B>) -> Option<Self::Output> {
-        if let Some(auth_header) = req.headers().get(AUTH_HEADER) {
-            Some(Auth {
-                id: "1".to_string(),
-                username: "aliz".to_string(),
-            })
+        let mut output: Option<Self::Output> = None;
+        if let Some(auth_string) = req.headers().get(AUTH_HEADER) {
+            let auth_str = auth_string.to_str().unwrap();
+            if auth_str.starts_with("Bearer ") {
+                let auth_str = auth_str.replace("Bearer ", "");
+                let decoded = decode_token(&auth_str);
+                match decoded {
+                    Ok(token_data) => output = Some(token_data.claims.auth),
+                    Err(e) => {
+                        self.reject_reason =
+                            Some(format!("header Authorization decode failed: {:?}", e))
+                    }
+                }
+            } else {
+                self.reject_reason = Some("header Authorization is invalid".to_string());
+            }
         } else {
-            None
+            self.reject_reason = Some("header Authorization could not be empty".to_string());
         }
+        output
     }
     fn on_authorized<B>(&mut self, req: &mut Request<B>, output: Self::Output) {
         req.extensions_mut().insert(output);
     }
-    fn unauthorized_response<B>(&mut self, req: &Request<B>) -> Response<Self::ResponseBody> {
-        let body = ResBody::default();
+    fn unauthorized_response<B>(&mut self, _req: &Request<B>) -> Response<Self::ResponseBody> {
+        let json_body = json!({"code":-1, "data": self.reject_reason}).to_string();
+        let body = box_body(Body::from(json_body));
         let mut res = Response::new(body);
-        *res.status_mut() = StatusCode::UNAUTHORIZED;
+        *res.status_mut() = StatusCode::OK;
         res
     }
 }
-

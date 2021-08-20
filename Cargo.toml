@@ -17,7 +17,7 @@ serde_json = "1.0.66"
 tokio = {version = "1.9.0", features = ["full"]}
 tower = "0.4.8"
 tower-http = { version = "0.1.1", features = ["trace", "auth"] }
-sqlx = {version = "0.5.5", features = ["runtime-tokio-rustls", "mysql", "chrono", "macros"], default-features = false}
+sqlx = {version = "0.5.5", features = ["runtime-tokio-rustls", "mysql", "chrono", "macros", "offline"], default-features = false}
 tracing-subscriber = "0.2.20"
 tracing = "0.1.26"
 bcrypt = "0.10.1"

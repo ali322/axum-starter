@@ -33,7 +33,7 @@ impl Payload {
     }
 }
 
-pub fn generate_token(id: String, username: String) -> String {
+pub fn generate_token<'a>(id: String, username: String) -> String {
     let iat = Utc::now();
     let exp = iat + Duration::days(30);
     let auth = Auth { id, username };
