@@ -6,11 +6,11 @@ mod repository;
 
 #[tokio::main]
 async fn main() {
-    use axum::{Server};
-    use dotenv::dotenv;
-    use std::{net::SocketAddr, env};
     use api::v1::apply_routes;
+    use axum::Server;
+    use dotenv::dotenv;
     use repository::init_db_pool;
+    use std::{env, net::SocketAddr};
 
     if env::var("RUST_LOG").is_err() {
         env::set_var("RUST_LOG", "sqlx=INFO,app=DEBUG")
