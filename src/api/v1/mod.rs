@@ -1,6 +1,6 @@
 use std::{convert::Infallible, sync::Arc};
 
-use crate::repository::{init_db_pool, DBPool};
+use crate::repository::DBPool;
 use axum::{prelude::*, response::Json, routing::BoxRoute, AddExtensionLayer};
 use hyper::StatusCode;
 use serde_json::json;
@@ -17,9 +17,8 @@ pub struct APIState {
     pub pool: DBPool,
 }
 
-pub async fn apply_routes() -> BoxRoute<Body> {
+pub fn apply_routes(pool: DBPool) -> BoxRoute<Body> {
     let prefix = "/api/v1";
-    let pool = init_db_pool().await;
     let api_state = Arc::new(APIState { pool });
     route(prefix, get(index))
         .route(

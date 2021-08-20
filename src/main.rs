@@ -10,6 +10,7 @@ async fn main() {
     use dotenv::dotenv;
     use std::{net::SocketAddr, env};
     use api::v1::apply_routes;
+    use repository::init_db_pool;
 
     if env::var("RUST_LOG").is_err() {
         env::set_var("RUST_LOG", "sqlx=INFO,app=DEBUG")
@@ -22,8 +23,10 @@ async fn main() {
         .expect("environment variable APP_PORT must be u16");
 
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
+    let pool = init_db_pool().await;
+    let routes = apply_routes(pool);
     Server::bind(&addr)
-        .serve(apply_routes().await.into_make_service())
+        .serve(routes.into_make_service())
         .await
         .expect("api started failed")
 }
