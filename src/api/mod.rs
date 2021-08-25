@@ -1,6 +1,6 @@
 macro_rules! reject {
     ($e: expr) => {
-        crate::lib::APIErrror::Custom($e)
+        crate::util::APIErrror::Custom($e)
     };
 }
 

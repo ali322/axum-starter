@@ -1,7 +1,7 @@
-use std::{convert::Infallible, sync::Arc};
+use std::{convert::Infallible};
 
-use crate::{lib::restrict::Restrict, repository::DBPool};
-use axum::{prelude::*, response::Json, routing::BoxRoute, AddExtensionLayer};
+use crate::{util::restrict::Restrict};
+use axum::{prelude::*, response::Json, routing::BoxRoute};
 use hyper::StatusCode;
 use serde_json::json;
 use tower::ServiceBuilder;
@@ -14,13 +14,9 @@ pub async fn index() -> &'static str {
     "hello world"
 }
 
-pub struct APIState {
-    pub pool: DBPool,
-}
-
-pub fn apply_routes(pool: DBPool) -> BoxRoute<Body> {
+pub fn apply_routes() -> BoxRoute<Body> {
     let prefix = "/api/v1";
-    let api_state = Arc::new(APIState { pool });
+    // let api_state = Arc::new(APIState { pool });
     route(prefix, get(index))
         .route(
             format!("{}/register", prefix).as_str(),
@@ -35,7 +31,7 @@ pub fn apply_routes(pool: DBPool) -> BoxRoute<Body> {
         )
         .layer(
             ServiceBuilder::new()
-                .layer(AddExtensionLayer::new(api_state))
+                // .layer(AddExtensionLayer::new(api_state))
                 .into_inner(),
         )
         .handle_error(|err| {

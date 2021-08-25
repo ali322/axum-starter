@@ -42,6 +42,7 @@ dependencies = [
  "dotenv",
  "hyper",
  "jsonwebtoken",
+ "lazy_static",
  "serde",
  "serde_json",
  "sqlx",
@@ -289,9 +290,6 @@ name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
-dependencies = [
- "serde",
-]
 
 [[package]]
 name = "fnv"
@@ -556,16 +554,6 @@ name = "if_chain"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f7280c75fb2e2fc47080ec80ccc481376923acb04501957fc38f935c3de5088"
-
-[[package]]
-name = "indexmap"
-version = "1.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc633605454125dec4b66843673f01c7df2b89479b32e0ed634e43a91cff62a5"
-dependencies = [
- "autocfg 1.0.1",
- "hashbrown",
-]
 
 [[package]]
 name = "instant"
@@ -1143,7 +1131,6 @@ version = "1.0.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "336b10da19a12ad094b59d870ebde26a45402e5b470add4b5fd03c5048a32127"
 dependencies = [
- "indexmap",
  "itoa",
  "ryu",
  "serde",
@@ -1315,7 +1302,6 @@ dependencies = [
  "rand",
  "rsa",
  "rustls",
- "serde",
  "sha-1",
  "sha2",
  "smallvec",
@@ -1340,13 +1326,9 @@ dependencies = [
  "either",
  "futures",
  "heck",
- "hex",
  "once_cell",
  "proc-macro2",
  "quote",
- "serde",
- "serde_json",
- "sha2",
  "sqlx-core",
  "sqlx-rt",
  "syn",

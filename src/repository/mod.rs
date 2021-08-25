@@ -26,3 +26,9 @@ pub async fn init_db_pool() -> DBPool {
       .await
       .expect("database pool could not create")
 }
+
+lazy_static!{
+  static ref POOL:DBPool = tokio::runtime::Runtime::new().unwrap().block_on(async {
+    init_db_pool().await
+  });
+}

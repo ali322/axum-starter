@@ -1,4 +1,4 @@
-use crate::lib::jwt::{decode_token, Auth};
+use crate::util::jwt::{decode_token, Auth};
 use axum::body::{box_body, BoxBody};
 use hyper::{http::StatusCode, Body, Request, Response};
 use serde_json::json;

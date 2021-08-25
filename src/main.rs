@@ -1,7 +1,9 @@
+#[macro_use]extern crate lazy_static;
+
 use axum::prelude::RoutingDsl;
 
 mod api;
-mod lib;
+mod util;
 mod repository;
 
 #[tokio::main]
@@ -9,7 +11,6 @@ async fn main() {
     use api::v1::apply_routes;
     use axum::Server;
     use dotenv::dotenv;
-    use repository::init_db_pool;
     use std::{env, net::SocketAddr};
 
     if env::var("RUST_LOG").is_err() {
@@ -23,8 +24,7 @@ async fn main() {
         .expect("environment variable APP_PORT must be u16");
 
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    let pool = init_db_pool().await;
-    let routes = apply_routes(pool);
+    let routes = apply_routes();
     Server::bind(&addr)
         .serve(routes.into_make_service())
         .await

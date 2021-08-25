@@ -1,11 +1,11 @@
-use super::{DBError, DBPool};
+use super::DBError;
+use crate::util::datetime_format::naive_datetime;
 use bcrypt::{hash, verify};
 use chrono::{Local, NaiveDateTime};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, query_as, query};
+use sqlx::{query, query_as, FromRow};
 use uuid::Uuid;
 use validator::Validate;
-use crate::lib::datetime_format::naive_datetime;
 
 #[derive(Debug, Clone, Serialize, FromRow)]
 pub struct User {
@@ -20,19 +20,21 @@ pub struct User {
 }
 
 impl User {
-    pub async fn find_one(id: String, pool: &DBPool) -> Result<User, DBError> {
+    pub async fn find_one(id: String) -> Result<User, DBError> {
+        let pool = super::POOL.clone();
         query_as::<_, User>(
             r"SELECT `id`, `username`, `password`,`email`,`last_logined_at`,`created_at` 
 FROM `users` WHERE `id` = ?",
         )
         .bind(id)
-        .fetch_one(pool)
+        .fetch_one(&pool)
         .await
     }
-    pub async fn find_all(pool: &DBPool) -> Result<Vec<User>, DBError> {
+    pub async fn find_all() -> Result<Vec<User>, DBError> {
+        let pool = super::POOL.clone();
         query_as::<_, User>(
             r"SELECT `id`, `username`, `password`,`email`,`last_logined_at`,`created_at` FROM `users` ORDER BY `username` ASC",
-        ).fetch_all(pool).await
+        ).fetch_all(&pool).await
     }
 }
 
@@ -55,25 +57,27 @@ fn now() -> NaiveDateTime {
 }
 
 impl NewUser {
-    pub async fn exists(&self, pool: &DBPool) -> Result<User, DBError> {
+    pub async fn exists(&self) -> Result<User, DBError> {
+        let pool = super::POOL.clone();
         query_as::<_, User>(
             r"SELECT `id`, `username`, `password`,`email`,`last_logined_at`,`created_at` 
                 FROM `users` WHERE `username` = ?",
         )
         .bind(self.username.clone())
-        .fetch_one(pool)
+        .fetch_one(&pool)
         .await
     }
-    pub async fn create(&self, pool: &DBPool) -> Result<User, DBError> {
+    pub async fn create(&self) -> Result<User, DBError> {
+        let pool = super::POOL.clone();
         let id = Uuid::new_v4().to_string();
         let hashed_password = hash(&self.password, 4).unwrap();
         query(
             r"INSERT INTO `users`(`id`, `username`, `password`, `email`, `created_at`, `last_logined_at`) 
             VALUES(?,?,?,?,?,?)"
         ).bind(id.clone()).bind(self.username.clone()).bind(hashed_password).bind(self.email.clone()).bind(now()).bind(now())
-        .execute(pool)
+        .execute(&pool)
         .await?;
-        User::find_one(id, pool).await
+        User::find_one(id).await
     }
 }
 
@@ -84,13 +88,14 @@ pub struct UpdateUser {
 }
 
 impl UpdateUser {
-    pub async fn save(&self, id: String, pool: &DBPool) -> Result<User, DBError> {
-        query(
-            "UPDATE `users` SET email = ? WHERE `id` = ?"
-        ).bind(self.email.clone()).bind(id.clone())
-        .execute(pool)
-        .await?;
-        User::find_one(id, pool).await
+    pub async fn save(&self, id: String) -> Result<User, DBError> {
+        let pool = super::POOL.clone();
+        query("UPDATE `users` SET email = ? WHERE `id` = ?")
+            .bind(self.email.clone())
+            .bind(id.clone())
+            .execute(&pool)
+            .await?;
+        User::find_one(id).await
     }
 }
 
@@ -103,25 +108,27 @@ pub struct LoginUser {
 }
 
 impl LoginUser {
-    pub async fn find_one(&self, pool: &DBPool) -> Result<User, DBError> {
+    pub async fn find_one(&self) -> Result<User, DBError> {
+        let pool = super::POOL.clone();
         query_as::<_, User>(
             r"SELECT `id`, `username`, `password`,`email`,`last_logined_at`,`created_at` 
     FROM `users` WHERE `username` = ? OR `email` = ?",
         )
         .bind(self.username_or_email.clone())
         .bind(self.username_or_email.clone())
-        .fetch_one(pool)
+        .fetch_one(&pool)
         .await
     }
     pub fn is_password_matched(&self, target: &str) -> bool {
         verify(&self.password, target).unwrap()
     }
-    pub async fn login(&self, id: String, pool: &DBPool) -> Result<User, DBError> {
-        query(
-            "UPDATE `users` SET last_logined_at = ? WHERE `id` = ?"
-        ).bind(now()).bind(id.clone())
-        .execute(pool)
-        .await?;
-        User::find_one(id, pool).await
+    pub async fn login(&self, id: String) -> Result<User, DBError> {
+        let pool = super::POOL.clone();
+        query("UPDATE `users` SET last_logined_at = ? WHERE `id` = ?")
+            .bind(now())
+            .bind(id.clone())
+            .execute(&pool)
+            .await?;
+        User::find_one(id).await
     }
 }
