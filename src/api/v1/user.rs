@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::{
-    repository::user::{User},
+    repository::user::{User, UpdateUser},
     util::APIResult,
 };
 use super::APIState;
@@ -18,8 +18,8 @@ pub async fn one(Path(id): Path<String>, Extension(state): Extension<Arc<APIStat
     Ok(reply!(user))
 }
 
-// pub async fn update(Path(id): Path<String>, Json(body): Json<UpdateUser>) -> APIResult {
-//     body.validate()?;
-//     let updated = body.save(id).await?;
-//     Ok(reply!(updated))
-// }
+pub async fn update(Path(id): Path<String>, Json(body): Json<UpdateUser>,  Extension(state): Extension<Arc<APIState>>) -> APIResult {
+    body.validate()?;
+    let updated = body.save(id, &state.conn).await?;
+    Ok(reply!(updated))
+}

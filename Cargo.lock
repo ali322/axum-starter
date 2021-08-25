@@ -44,6 +44,7 @@ dependencies = [
  "jsonwebtoken",
  "lazy_static",
  "sea-orm",
+ "sea-query",
  "serde",
  "serde_json",
  "thiserror",
