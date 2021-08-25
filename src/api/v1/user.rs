@@ -7,7 +7,6 @@ use validator::Validate;
 
 pub async fn all() -> APIResult {
     let users = User::find_all().await?;
-    // Err(reject!("wrong"))
     Ok(reply!(users))
 }
 
