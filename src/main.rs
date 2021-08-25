@@ -1,15 +1,13 @@
-#[macro_use]extern crate lazy_static;
-
-use axum::prelude::RoutingDsl;
 
 mod api;
 mod util;
 mod repository;
+mod entity;
 
 #[tokio::main]
 async fn main() {
     use api::v1::apply_routes;
-    use axum::Server;
+    use axum::{prelude::*, Server};
     use dotenv::dotenv;
     use std::{env, net::SocketAddr};
 
@@ -24,7 +22,8 @@ async fn main() {
         .expect("environment variable APP_PORT must be u16");
 
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    let routes = apply_routes();
+    let conn = repository::init_db_conn().await;
+    let routes = apply_routes(conn);
     Server::bind(&addr)
         .serve(routes.into_make_service())
         .await

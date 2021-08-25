@@ -3,7 +3,7 @@ use serde_json::{Value, json};
 use thiserror::Error;
 use std::{num::ParseIntError, io::Error as IOError};
 use validator::{ValidationErrors};
-use sqlx::Error as SqlxError;
+use crate::repository::DBError;
 
 pub type APIResult = Result<Json<Value>, APIErrror>;
 
@@ -14,7 +14,7 @@ pub enum APIErrror {
     Custom(&'static str),
     ParseInt(#[from] ParseIntError),
     Validate(#[from] ValidationErrors),
-    Sqlx(#[from] SqlxError)
+    DB(#[from] DBError)
 }
 
 impl IntoResponse for APIErrror {

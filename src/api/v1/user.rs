@@ -1,22 +1,25 @@
+use std::sync::Arc;
+
 use crate::{
-    repository::user::{UpdateUser, User},
+    repository::user::{User},
     util::APIResult,
 };
-use axum::extract::{Json, Path};
+use super::APIState;
+use axum::extract::{Extension, Json, Path};
 use validator::Validate;
 
-pub async fn all() -> APIResult {
-    let users = User::find_all().await?;
+pub async fn all(Extension(state): Extension<Arc<APIState>>) -> APIResult {
+    let users = User::find_all(&state.conn).await?;
     Ok(reply!(users))
 }
 
-pub async fn one(Path(id): Path<String>) -> APIResult {
-    let user = User::find_one(id).await?;
+pub async fn one(Path(id): Path<String>, Extension(state): Extension<Arc<APIState>>) -> APIResult {
+    let user = User::find_one(id, &state.conn).await?;
     Ok(reply!(user))
 }
 
-pub async fn update(Path(id): Path<String>, Json(body): Json<UpdateUser>) -> APIResult {
-    body.validate()?;
-    let updated = body.save(id).await?;
-    Ok(reply!(updated))
-}
+// pub async fn update(Path(id): Path<String>, Json(body): Json<UpdateUser>) -> APIResult {
+//     body.validate()?;
+//     let updated = body.save(id).await?;
+//     Ok(reply!(updated))
+// }
