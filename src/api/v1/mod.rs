@@ -22,12 +22,11 @@ pub fn apply_routes() -> Router<BoxRoute> {
     let v1 = Router::new()
         .route("/register", post(auth::register))
         .route("/login", post(auth::login))
-        .route("/user", get(user::all))
-        // .route(
-        //   "/user/:id",
-        //   get(user::one.layer(restrict_layer.clone()))
-        //   .put(user::update.layer(restrict_layer.clone())),
-        // )
-        .layer(layer_fn(|inner|TodoMiddleware{ inner }));
+        .route("/user", get(user::all.layer(layer_fn(|inner|TodoMiddleware{ inner }))))
+        .route(
+          "/user/:id",
+          get(user::one.layer(restrict_layer.clone()))
+          .put(user::update.layer(restrict_layer.clone())),
+        );
     router.nest(prefix, v1.boxed()).boxed()
 }
