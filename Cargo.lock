@@ -49,9 +49,11 @@ dependencies = [
  "bytes",
  "chrono",
  "dotenv",
+ "futures",
  "hyper",
  "jsonwebtoken",
  "lazy_static",
+ "pin-project",
  "rbatis",
  "serde",
  "serde_json",
@@ -274,14 +276,13 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
 name = "axum"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1a46bef3ba1977d5b66ad6e55cab4ec5019fc805fd1fc4295c31c17c77b1e89"
+checksum = "4e2423522684032529c51d209740c77d57cc56bfef7b9a18630f919a974d2616"
 dependencies = [
  "async-trait",
  "bitflags",
  "bytes",
- "dyn-clone",
  "futures-util",
  "http",
  "http-body",
@@ -651,12 +652,6 @@ name = "dotenv"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
-
-[[package]]
-name = "dyn-clone"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee2626afccd7561a06cf1367e2950c4718ea04565e20fb5029b6c7d8ad09abcf"
 
 [[package]]
 name = "either"

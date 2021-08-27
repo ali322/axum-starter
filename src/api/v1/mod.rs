@@ -1,9 +1,10 @@
-use crate::util::restrict::Restrict;
+use crate::util::{restrict::Restrict, todo::TodoMiddleware};
 use axum::{
     handler::{get, post, Handler},
     routing::BoxRoute,
     Router,
 };
+use tower::{layer::layer_fn};
 use tower_http::auth::RequireAuthorizationLayer;
 
 mod auth;
@@ -21,11 +22,12 @@ pub fn apply_routes() -> Router<BoxRoute> {
     let v1 = Router::new()
         .route("/register", post(auth::register))
         .route("/login", post(auth::login))
-        .route("/user", get(user::all.layer(restrict_layer.clone())))
-        .route(
-            "/user/:id",
-            get(user::one.layer(restrict_layer.clone()))
-                .put(user::update.layer(restrict_layer.clone())),
-        );
+        .route("/user", get(user::all))
+        // .route(
+        //   "/user/:id",
+        //   get(user::one.layer(restrict_layer.clone()))
+        //   .put(user::update.layer(restrict_layer.clone())),
+        // )
+        .layer(layer_fn(|inner|TodoMiddleware{ inner }));
     router.nest(prefix, v1.boxed()).boxed()
 }
