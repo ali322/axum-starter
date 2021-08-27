@@ -1,15 +1,8 @@
-#[macro_use]extern crate lazy_static;
-
-use axum::prelude::RoutingDsl;
-
-mod api;
-mod util;
-mod repository;
 
 #[tokio::main]
 async fn main() {
-    use api::v1::apply_routes;
-    use axum::Server;
+    use app::api::v1::apply_routes;
+    use axum::{Server};
     use dotenv::dotenv;
     use std::{env, net::SocketAddr};
 
