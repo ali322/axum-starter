@@ -1,5 +1,5 @@
 use crate::{
-    repository::user::{ UserDao, UpdateUser},
+    repository::{dao::UserDao, dto::UpdateUser},
     util::APIResult,
 };
 use axum::extract::{Json, Path};

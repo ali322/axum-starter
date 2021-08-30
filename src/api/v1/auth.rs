@@ -1,5 +1,5 @@
 use crate::{
-    repository::user::*,
+    repository::dto::*,
     util::{jwt::generate_token, APIResult},
 };
 use axum::extract::Json;

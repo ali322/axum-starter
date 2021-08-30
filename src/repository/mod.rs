@@ -5,7 +5,9 @@ use rbatis::{
 };
 use std::env;
 
-pub mod user;
+pub mod dao;
+pub mod vo;
+pub mod dto;
 
 pub type DBPool = Rbatis;
 pub type DBError = Error;
