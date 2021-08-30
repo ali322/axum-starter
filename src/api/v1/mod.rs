@@ -15,10 +15,8 @@ pub async fn index() -> &'static str {
 }
 
 pub fn apply_routes() -> Router<BoxRoute> {
-    let prefix = "/api/v1";
     let restrict_layer = RequireAuthorizationLayer::custom(Restrict::new());
     // let api_state = Arc::new(APIState { pool });
-    let router = Router::new().route("/", get(index));
     let v1 = Router::new()
         .route("/register", post(auth::register))
         .route("/login", post(auth::login))
@@ -28,5 +26,5 @@ pub fn apply_routes() -> Router<BoxRoute> {
           get(user::one.layer(restrict_layer.clone()))
           .put(user::update.layer(restrict_layer.clone())),
         );
-    router.nest(prefix, v1.boxed()).boxed()
+    v1.boxed()
 }
