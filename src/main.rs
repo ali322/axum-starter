@@ -1,7 +1,7 @@
 
 #[tokio::main]
 async fn main() {
-    use app::api::v1::apply_routes;
+    use app::api::apply_routes;
     use axum::{Server};
     use dotenv::dotenv;
     use std::{env, net::SocketAddr};

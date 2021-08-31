@@ -12,7 +12,7 @@ macro_rules! reply {
   };
 }
 
-pub mod v1;
+mod v1;
 
 async fn index() -> &'static str {
   "hello world"

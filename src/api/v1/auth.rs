@@ -2,10 +2,10 @@ use crate::{
     repository::dto::*,
     util::{jwt::generate_token, APIResult},
 };
-use axum::extract::Json;
+use axum::{handler::post, routing::BoxRoute, Json, Router};
 use validator::Validate;
 
-pub async fn register(Json(body): Json<NewUser>) -> APIResult {
+async fn register(Json(body): Json<NewUser>) -> APIResult {
     body.validate()?;
     if body.exists().await.is_ok() {
         return Err(reject!("用户已存在"));
@@ -17,7 +17,7 @@ pub async fn register(Json(body): Json<NewUser>) -> APIResult {
     }))
 }
 
-pub async fn login(Json(body): Json<LoginUser>) -> APIResult {
+async fn login(Json(body): Json<LoginUser>) -> APIResult {
     body.validate()?;
     let user = match body.find_one().await {
         Ok(val) => val,
@@ -31,4 +31,10 @@ pub async fn login(Json(body): Json<LoginUser>) -> APIResult {
     Ok(reply!({
       "token": token, "user": user,
     }))
+}
+
+pub fn apply_routes(v1: Router<BoxRoute>) -> Router<BoxRoute> {
+    v1.route("/register", post(register))
+        .route("/login", post(login))
+        .boxed()
 }

@@ -1,5 +1,7 @@
-use super::super::dao::UserDao;
-use crate::util::datetime_format::naive_datetime;
+use crate::{
+    repository::{dao::UserDao, DBError, POOL},
+    util::datetime_format::naive_datetime,
+};
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
@@ -17,14 +19,27 @@ pub struct User {
 }
 
 impl From<UserDao> for User {
-    fn from(u: UserDao) -> Self {
+    fn from(dao: UserDao) -> Self {
         Self {
-            id: u.id,
-            username: u.username,
-            password: u.password,
-            email: u.email,
-            last_logined_at: u.last_logined_at,
-            created_at: u.created_at,
+            id: dao.id,
+            username: dao.username,
+            password: dao.password,
+            email: dao.email,
+            last_logined_at: dao.last_logined_at,
+            created_at: dao.created_at,
         }
+    }
+}
+
+impl User {
+    pub async fn find_one(id: String) -> Result<User, DBError> {
+        let w = POOL.new_wrapper().eq("id", id);
+        UserDao::find_one(&w).await.map(Into::into)
+    }
+    pub async fn find_all() -> Result<Vec<Self>, DBError> {
+        let w = POOL.new_wrapper();
+        let all = UserDao::find_list(&w).await?;
+        let all: Vec<Self> = all.iter().map(|v| v.clone().into()).collect();
+        Ok(all)
     }
 }
