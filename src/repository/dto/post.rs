@@ -43,7 +43,8 @@ impl UpdatePost {
         let mut dao: PostDao = POOL.fetch_by_column("id", &id).await?;
         dao.title = self.title.clone();
         dao.content = self.content.clone();
-        POOL.update_by_column::<PostDao>("id", &mut dao).await?;
+        let w = POOL.new_wrapper().eq("id", id);
+        POOL.update_by_wrapper(&mut dao, &w, &[]).await?;
         Ok(dao.into())
     }
 }
