@@ -1,6 +1,8 @@
 use crate::util::jwt::{decode_token, Auth};
-use axum::body::{box_body, BoxBody};
-use hyper::{http::StatusCode, Body, Request, Response};
+use axum::{
+    body::{box_body, Body, BoxBody},
+    http::{Request, Response, StatusCode},
+};
 use serde_json::json;
 use tower_http::auth::AuthorizeRequest;
 
@@ -13,7 +15,9 @@ pub struct Restrict {
 
 impl Restrict {
     pub fn new() -> Self {
-        Self { reject_reason: None }
+        Self {
+            reject_reason: None,
+        }
     }
 }
 

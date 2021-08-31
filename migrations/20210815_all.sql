@@ -6,6 +6,7 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `password` varchar(100) NOT NULL,
   `email` varchar(200) DEFAULT NULL,
+  `is_actived` int(1) NOT NULL DEFAULT '1',
   `last_logined_at` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`)

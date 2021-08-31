@@ -9,6 +9,7 @@ pub struct UserDao {
     pub username: String,
     pub password: String,
     pub email: Option<String>,
+    pub is_actived: Option<i32>,
     pub last_logined_at: NaiveDateTime,
     pub created_at: NaiveDateTime,
 }

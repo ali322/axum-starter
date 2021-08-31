@@ -12,6 +12,7 @@ pub struct User {
     #[serde(skip_serializing)]
     pub password: String,
     pub email: Option<String>,
+    pub is_actived: Option<bool>,
     #[serde(serialize_with = "naive_datetime::serialize")]
     pub last_logined_at: NaiveDateTime,
     #[serde(serialize_with = "naive_datetime::serialize")]
@@ -25,6 +26,7 @@ impl From<UserDao> for User {
             username: dao.username,
             password: dao.password,
             email: dao.email,
+            is_actived: dao.is_actived.map(|v| v == 1),
             last_logined_at: dao.last_logined_at,
             created_at: dao.created_at,
         }

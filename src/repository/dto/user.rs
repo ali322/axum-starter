@@ -37,6 +37,7 @@ impl NewUser {
             username: self.username.clone(),
             password: hashed_password,
             email: self.email.clone(),
+            is_actived: Some(true as i32),
             last_logined_at: now(),
             created_at: now(),
         };
