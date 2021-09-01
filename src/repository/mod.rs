@@ -12,7 +12,7 @@ pub mod dto;
 pub type DBPool = Rbatis;
 pub type DBError = Error;
 
-pub async fn init_db_pool() -> DBPool {
+async fn init_db() -> DBPool {
     let database_url =
         env::var("DATABASE_URL").expect("environment variable DATABASE_URL must be set");
     let mut rbatis = Rbatis::new();
@@ -21,8 +21,6 @@ pub async fn init_db_pool() -> DBPool {
         1,
         0,
     )));
-    // let mut opt = DBPoolOptions::new();
-    // opt.max_connections = 20;
     rbatis
         .link(&database_url)
         .await
@@ -31,5 +29,5 @@ pub async fn init_db_pool() -> DBPool {
 }
 
 lazy_static! {
-    static ref POOL: DBPool = block_on(async { init_db_pool().await });
+    static ref POOL: DBPool = block_on(async { init_db().await });
 }

@@ -1,9 +1,9 @@
 use axum::{Router, handler::get, routing::BoxRoute};
 
 macro_rules! reject {
-    ($e: expr) => {
-        crate::util::APIErrror::Custom($e)
-    };
+  ($e: expr) => {
+      crate::util::APIErrror::Custom($e)
+  };
 }
 
 macro_rules! reply {

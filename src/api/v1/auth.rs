@@ -1,9 +1,10 @@
-use crate::{
-    repository::dto::*,
-    util::{jwt::generate_token, APIResult},
-};
 use axum::{handler::post, routing::BoxRoute, Json, Router};
 use validator::Validate;
+
+use crate::{
+    repository::dto::{LoginUser, NewUser},
+    util::{jwt, APIResult},
+};
 
 async fn register(Json(body): Json<NewUser>) -> APIResult {
     body.validate()?;
@@ -11,7 +12,7 @@ async fn register(Json(body): Json<NewUser>) -> APIResult {
         return Err(reject!("用户已存在"));
     }
     let user = body.create().await?;
-    let token = generate_token(user.clone().id, user.clone().username);
+    let token = jwt::generate_token(user.clone().id, user.clone().username);
     Ok(reply!({
       "token": token, "user": user,
     }))
@@ -26,10 +27,10 @@ async fn login(Json(body): Json<LoginUser>) -> APIResult {
     if !body.is_password_matched(&user.password) {
         return Err(reject!("密码不正确"));
     }
-    let user = body.login(user.id).await?;
-    let token = generate_token(user.clone().id, user.clone().username);
+    let user = body.login(&user).await?;
+    let token = jwt::generate_token(user.clone().id, user.clone().username);
     Ok(reply!({
-      "token": token, "user": user,
+      "token": token, "user": user
     }))
 }
 

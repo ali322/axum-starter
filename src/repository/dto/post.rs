@@ -26,8 +26,8 @@ impl NewPost {
             created_at: now(),
             updated_at: now(),
         };
-        let ret = POOL.save(&dao, &[]).await?;
-        Post::find_one(ret.last_insert_id.unwrap() as i32).await
+        PostDao::create_one(&dao).await?;
+        Ok(dao.into())
     }
 }
 
@@ -44,7 +44,8 @@ impl UpdatePost {
         dao.title = self.title.clone();
         dao.content = self.content.clone();
         let w = POOL.new_wrapper().eq("id", id);
-        POOL.update_by_wrapper(&mut dao, &w, &[]).await?;
+        PostDao::update_one(&dao, &w).await?;
+        // POOL.save(&dao, &[]).await?;
         Ok(dao.into())
     }
 }

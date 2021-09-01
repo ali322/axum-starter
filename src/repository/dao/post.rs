@@ -21,4 +21,14 @@ impl PostDao {
     pub async fn find_list(w: &Wrapper) -> Result<Vec<Self>, DBError> {
         POOL.fetch_list_by_wrapper(w).await
     }
+    pub async fn create_one(&self) -> Result<i64, DBError> {
+        let ret = POOL.save(&self, &[]).await?;
+        Ok(ret.last_insert_id.unwrap())
+    }
+    pub async fn update_one(&self, w: &Wrapper) -> Result<u64, DBError> {
+        POOL.update_by_wrapper(&self, w, &[]).await
+    }
+    pub async fn delete_one(w: &Wrapper) -> Result<u64, DBError> {
+        POOL.remove_by_wrapper::<Self>(w).await
+    }
 }

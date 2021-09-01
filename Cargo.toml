@@ -1,28 +1,25 @@
 [package]
-edition = "2018"
 name = "app"
 version = "0.1.0"
+edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 axum = "0.2.3"
 bcrypt = "0.10.1"
-bytes = "1.0.1"
-chrono = {version = "0.4.19", features = ["serde"]}
+chrono = { version = "0.4.19", features = ["serde"] }
 dotenv = "0.15.0"
-futures = "0.3.16"
-hyper = "0.14.11"
 jsonwebtoken = "7.2.0"
 lazy_static = "1.4.0"
-rbatis = {version = "2.0.24", features = ["mysql", "tokio1", "debug_mode"]}
-serde = {version = "1.0.127", features = ["derive"]}
-serde_json = "1.0.66"
-thiserror = "1.0.26"
-tokio = {version = "1.9.0", features = ["full"]}
+rbatis = { version = "2.0.24", features = ["mysql", "tokio1", "debug_mode"] }
+serde = { version = "1.0.130", features = ["derive"] }
+serde_json = "1.0.67"
+thiserror = "1.0.28"
+tokio = { version = "1.10.1", features = ["full"] }
 tower = "0.4.8"
-tower-http = {version = "0.1.1", features = ["trace", "auth"]}
+tower-http = { version = "0.1.1", features = ["trace", "auth"] }
 tracing = "0.1.26"
 tracing-subscriber = "0.2.20"
-uuid = {version = "0.8.2", features = ["serde", "v4"]}
-validator = {version = "0.14.0", features = ["derive"]}
+uuid = { version = "0.8.2", features = ["serde", "v4"] }
+validator = { version = "0.14.0", features = ["derive"] }

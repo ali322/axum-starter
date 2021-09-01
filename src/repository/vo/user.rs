@@ -12,6 +12,9 @@ pub struct User {
     #[serde(skip_serializing)]
     pub password: String,
     pub email: Option<String>,
+    pub avatar: Option<String>,
+    pub memo: Option<String>,
+    pub sys_role: Option<String>,
     pub is_actived: Option<bool>,
     #[serde(serialize_with = "naive_datetime::serialize")]
     pub last_logined_at: NaiveDateTime,
@@ -26,6 +29,9 @@ impl From<UserDao> for User {
             username: dao.username,
             password: dao.password,
             email: dao.email,
+            avatar: dao.avatar,
+            memo: dao.memo,
+            sys_role: dao.sys_role,
             is_actived: dao.is_actived.map(|v| v == 1),
             last_logined_at: dao.last_logined_at,
             created_at: dao.created_at,
@@ -34,7 +40,7 @@ impl From<UserDao> for User {
 }
 
 impl User {
-    pub async fn find_one(id: String) -> Result<User, DBError> {
+    pub async fn find_one(id: String) -> Result<Self, DBError> {
         let w = POOL.new_wrapper().eq("id", id);
         UserDao::find_one(&w).await.map(Into::into)
     }

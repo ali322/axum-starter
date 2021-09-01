@@ -1,7 +1,10 @@
-use axum::{routing::BoxRoute, Router};
+use axum::{
+    routing::BoxRoute,
+    Router,
+};
 
-mod auth;
 mod user;
+mod auth;
 mod post;
 
 pub fn apply_routes() -> Router<BoxRoute> {

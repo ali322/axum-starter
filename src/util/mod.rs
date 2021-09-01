@@ -1,8 +1,7 @@
-pub mod jwt;
 pub mod datetime_format;
+mod error;
+pub mod jwt;
 pub mod restrict;
-pub mod error;
-pub mod todo;
 
 pub use error::APIErrror;
 pub use error::APIResult;
