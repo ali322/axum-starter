@@ -2,13 +2,16 @@ use axum::{handler::post, routing::BoxRoute, Json, Router};
 use validator::Validate;
 
 use crate::{
-    repository::dto::{LoginUser, NewUser},
+    repository::{
+        dto::{LoginUser, NewUser},
+        vo::User,
+    },
     util::{jwt, APIResult},
 };
 
 async fn register(Json(body): Json<NewUser>) -> APIResult {
     body.validate()?;
-    if body.exists().await.is_ok() {
+    if User::find_by_username(&body.username).await.is_ok() {
         return Err(reject!("用户已存在"));
     }
     let user = body.create().await?;
@@ -20,7 +23,7 @@ async fn register(Json(body): Json<NewUser>) -> APIResult {
 
 async fn login(Json(body): Json<LoginUser>) -> APIResult {
     body.validate()?;
-    let user = match body.find_one().await {
+    let user = match User::find_by_username_or_email(&body.username_or_email).await {
         Ok(val) => val,
         Err(_) => return Err(reject!("用户不存在")),
     };

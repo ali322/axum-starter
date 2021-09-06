@@ -17,13 +17,13 @@ async fn all() -> APIResult {
 }
 
 async fn one(Path(id): Path<String>) -> APIResult {
-    let one = User::find_one(id).await?;
+    let one = User::find_one(&id).await?;
     Ok(reply!(one))
 }
 
 async fn update(Path(id): Path<String>, Json(body): Json<UpdateUser>) -> APIResult {
     body.validate()?;
-    let updated = body.save(id).await?;
+    let updated = body.save(&id).await?;
     Ok(reply!(updated))
 }
 
