@@ -6,8 +6,10 @@ use rbatis::{
 use std::env;
 
 pub mod dao;
-pub mod vo;
 pub mod dto;
+mod traits;
+
+pub use traits::Dao;
 
 pub type DBPool = Rbatis;
 pub type DBError = Error;

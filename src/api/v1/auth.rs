@@ -4,7 +4,7 @@ use validator::Validate;
 use crate::{
     repository::{
         dto::{LoginUser, NewUser},
-        vo::User,
+        dao::User,
     },
     util::{jwt, APIResult},
 };

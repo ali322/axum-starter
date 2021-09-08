@@ -44,6 +44,8 @@ dependencies = [
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "app_macro",
+ "async-trait",
  "axum",
  "bcrypt",
  "chrono",
@@ -61,6 +63,17 @@ dependencies = [
  "tracing-subscriber",
  "uuid",
  "validator",
+]
+
+[[package]]
+name = "app_macro"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "quote",
+ "rbatis",
+ "serde",
+ "syn",
 ]
 
 [[package]]

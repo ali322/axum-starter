@@ -1,4 +1,4 @@
-use crate::repository::{dao::UserDao, vo::User, DBError, POOL};
+use crate::repository::{dao::User, DBError, POOL, Dao};
 use bcrypt::{hash, verify};
 use chrono::{Local, NaiveDateTime};
 use serde::{Deserialize, Serialize};
@@ -30,19 +30,15 @@ impl NewUser {
     pub async fn create(self) -> Result<User, DBError> {
         let id = Uuid::new_v4().to_string();
         let hashed_password = hash(&self.password, 4).unwrap();
-        let dao = UserDao {
+        let dao = User {
             id: id.clone(),
             username: self.username,
             password: hashed_password,
             email: self.email,
-            avatar: self.avatar,
-            memo: self.memo,
-            sys_role: Some("member".to_string()),
-            is_actived: Some(true as i32),
             last_logined_at: now(),
             created_at: now(),
         };
-        UserDao::create_one(&dao).await?;
+        User::create_one(&dao).await?;
         Ok(dao.into())
     }
 }
@@ -51,18 +47,14 @@ impl NewUser {
 pub struct UpdateUser {
     #[validate(email)]
     pub email: Option<String>,
-    pub avatar: Option<String>,
-    pub memo: Option<String>,
 }
 
 impl UpdateUser {
     pub async fn save(self, id: &str) -> Result<User, DBError> {
         let w = POOL.new_wrapper().eq("id", id);
-        let mut dao = UserDao::find_one(&w).await?;
+        let mut dao = User::find_one(&w).await?;
         dao.email = self.email;
-        dao.avatar = self.avatar;
-        dao.memo = self.memo;
-        UserDao::update_one(&dao, &w).await?;
+        User::update_one(&dao, &w).await?;
         Ok(dao.into())
     }
 }
@@ -79,11 +71,11 @@ impl LoginUser {
     pub fn is_password_matched(&self, target: &str) -> bool {
         verify(self.password.clone(), target).unwrap()
     }
-    pub async fn login(&self, dao: &UserDao) -> Result<User, DBError> {
+    pub async fn login(&self, dao: &User) -> Result<User, DBError> {
         let mut dao = dao.to_owned();
         dao.last_logined_at = now();
         let w = POOL.new_wrapper().eq("id", dao.id.clone());
-        UserDao::update_one(&dao, &w).await?;
+        User::update_one(&dao, &w).await?;
         // POOL.save(&dao, &[]).await?;
         Ok(dao.into())
     }
