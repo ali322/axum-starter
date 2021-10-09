@@ -34,15 +34,14 @@ impl AuthorizeRequest for Restrict {
                 match decoded {
                     Ok(token_data) => output = Some(token_data.claims.auth),
                     Err(e) => {
-                        self.reject_reason =
-                            Some(format!("header Authorization decode failed: {:?}", e))
+                        self.reject_reason = Some(format!("请求头 Authorization 解析错误: {:?}", e))
                     }
                 }
             } else {
-                self.reject_reason = Some("header Authorization is invalid".to_string());
+                self.reject_reason = Some("请求头 Authorization 不合法".to_string());
             }
         } else {
-            self.reject_reason = Some("header Authorization could not be empty".to_string());
+            self.reject_reason = Some("请求头 Authorization 不能为空".to_string());
         }
         output
     }
@@ -50,7 +49,7 @@ impl AuthorizeRequest for Restrict {
         req.extensions_mut().insert(output);
     }
     fn unauthorized_response<B>(&mut self, _req: &Request<B>) -> Response<Self::ResponseBody> {
-        let json_body = json!({"code":-1, "data": self.reject_reason}).to_string();
+        let json_body = json!({"code":-1, "message": self.reject_reason}).to_string();
         let body = box_body(Body::from(json_body));
         let mut res = Response::new(body);
         *res.status_mut() = StatusCode::OK;

@@ -7,10 +7,10 @@ use std::env;
 
 pub mod dao;
 pub mod dto;
+pub mod vo;
 mod traits;
 
 pub use traits::Dao;
-
 pub type DBPool = Rbatis;
 pub type DBError = Error;
 

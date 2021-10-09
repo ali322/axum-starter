@@ -12,12 +12,11 @@ use axum::{
     routing::BoxRoute,
     Json, Router,
 };
-use tower::layer::layer_fn;
 use tower_http::auth::RequireAuthorizationLayer;
 use validator::Validate;
 
 async fn all() -> APIResult {
-    let all = Post::find_all().await?;
+    let all = Post::find_all(None).await?;
     Ok(reply!(all))
 }
 
@@ -45,5 +44,6 @@ pub fn apply_routes(v1: Router<BoxRoute>) -> Router<BoxRoute> {
             "/post/:id",
             get(one).put(update.layer(restrict_layer.clone())),
         )
+        .layer(restrict_layer)
         .boxed()
 }

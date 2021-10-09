@@ -1,6 +1,7 @@
-use crate::repository::{ dao::Post, DBError, POOL, Dao};
-use chrono::{Local, NaiveDateTime};
-use rbatis::crud::CRUD;
+use crate::{
+    repository::{dao::Post, DBError, Dao, POOL},
+    util::now,
+};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -12,10 +13,6 @@ pub struct NewPost {
     pub user_id: String,
 }
 
-fn now() -> NaiveDateTime {
-    Local::now().naive_local()
-}
-
 impl NewPost {
     pub async fn create(&self) -> Result<Post, DBError> {
         let dao = Post {
@@ -25,9 +22,10 @@ impl NewPost {
             user_id: self.user_id.clone(),
             created_at: now(),
             updated_at: now(),
+            is_deleted: 0,
         };
         Post::create_one(&dao).await?;
-        Ok(dao.into())
+        Ok(dao)
     }
 }
 
@@ -44,7 +42,7 @@ impl UpdatePost {
         dao.title = self.title.clone();
         dao.content = self.content.clone();
         let w = POOL.new_wrapper().eq("id", id);
-        Post::update_one(&dao, &w).await?;
-        Ok(dao.into())
+        Post::update_one(&dao, w).await?;
+        Ok(dao)
     }
 }

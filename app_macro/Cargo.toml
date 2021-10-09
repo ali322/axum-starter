@@ -17,5 +17,5 @@ features = ["full"]
 
 [dependencies]
 async-trait = "0.1.51"
-rbatis = {version = "2.0.24", features = ["mysql", "tokio1", "debug_mode"]}
+rbatis = {version = "2.0.24", default-features = false, features = ["mysql", "tokio1", "debug_mode"]}
 serde = {version = "1.0.130"}

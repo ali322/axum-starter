@@ -1,4 +1,4 @@
-use crate::util::datetime_format::utc_datetime;
+use crate::util::serde_format::utc_datetime;
 use chrono::{DateTime, Duration, Timelike, Utc};
 use jsonwebtoken::{
     decode, encode, errors::Result, DecodingKey, EncodingKey, Header, TokenData, Validation,
@@ -6,10 +6,11 @@ use jsonwebtoken::{
 use serde::{Deserialize, Serialize};
 use std::env;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Auth {
     pub id: String,
     pub username: String,
+    pub is_admin: bool,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -33,10 +34,11 @@ impl Payload {
     }
 }
 
-pub fn generate_token<'a>(id: String, username: String) -> String {
+pub fn generate_token(
+    auth: Auth
+) -> String {
     let iat = Utc::now();
     let exp = iat + Duration::days(30);
-    let auth = Auth { id, username };
     let payload = Payload::new(auth, iat, exp);
     let jwt_key = env::var("JWT_KEY").expect("environment variable JWT_KEY must be set");
     encode(

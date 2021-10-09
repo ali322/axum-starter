@@ -3,10 +3,13 @@ use validator::Validate;
 
 use crate::{
     repository::{
-        dto::{LoginUser, NewUser},
         dao::User,
+        dto::{LoginUser, NewUser},
     },
-    util::{jwt, APIResult},
+    util::{
+        jwt::{self, Auth},
+        APIResult,
+    },
 };
 
 async fn register(Json(body): Json<NewUser>) -> APIResult {
@@ -15,7 +18,11 @@ async fn register(Json(body): Json<NewUser>) -> APIResult {
         return Err(reject!("用户已存在"));
     }
     let user = body.create().await?;
-    let token = jwt::generate_token(user.clone().id, user.clone().username);
+    let token = jwt::generate_token(Auth {
+        id: user.id.clone(),
+        username: user.username.clone(),
+        is_admin: false,
+    });
     Ok(reply!({
       "token": token, "user": user,
     }))
@@ -30,8 +37,15 @@ async fn login(Json(body): Json<LoginUser>) -> APIResult {
     if !body.is_password_matched(&user.password) {
         return Err(reject!("密码不正确"));
     }
+    if user.is_actived == 0 {
+        return Err(reject!("用户被禁用"));
+    }
     let user = body.login(&user).await?;
-    let token = jwt::generate_token(user.clone().id, user.clone().username);
+    let token = jwt::generate_token(Auth {
+        id: user.id.clone(),
+        username: user.username.clone(),
+        is_admin: false,
+    });
     Ok(reply!({
       "token": token, "user": user
     }))

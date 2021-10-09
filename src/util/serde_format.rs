@@ -40,3 +40,21 @@ pub mod utc_datetime {
           .ok_or_else(|| serde::de::Error::custom("invalid Unix timestamp value"))
   }
 }
+
+pub mod i32_bool {
+  use serde::{self, Deserialize, Deserializer, Serializer};
+  pub fn serialize<S>(val: &i32, serializer: S) -> Result<S::Ok, S::Error>
+  where
+      S: Serializer,
+  {
+      let s = if *val == 1 { true } else { false };
+      serializer.serialize_bool(s)
+  }
+  pub fn deserialize<'de, D>(deserializer: D) -> Result<i32, D::Error>
+  where
+      D: Deserializer<'de>,
+  {
+      let d = i32::deserialize(deserializer)?;
+      Ok(d)
+  }
+}

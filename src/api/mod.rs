@@ -1,9 +1,9 @@
-use axum::{Router, handler::get, routing::BoxRoute};
+use axum::{handler::get, routing::BoxRoute, Router};
 
 macro_rules! reject {
-  ($e: expr) => {
-      crate::util::APIErrror::Custom($e)
-  };
+    ($e: expr) => {
+        crate::util::APIError::Custom($e.to_string())
+    };
 }
 
 macro_rules! reply {
@@ -15,11 +15,11 @@ macro_rules! reply {
 mod v1;
 
 async fn index() -> &'static str {
-  "hello world"
+    "hello world"
 }
 
 pub fn apply_routes() -> Router<BoxRoute> {
-  let prefix = "/api/v1";
-  let router = Router::new().route("/", get(index));
-  router.nest(prefix, v1::apply_routes()).boxed()
+    let prefix = "/api/v1";
+    let router = Router::new().route("/", get(index));
+    router.nest(prefix, v1::apply_routes()).boxed()
 }
