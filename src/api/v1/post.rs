@@ -37,9 +37,10 @@ async fn update(Path(id): Path<i32>, Json(body): Json<UpdatePost>) -> APIResult 
     Ok(reply!(updated))
 }
 
-pub fn apply_routes(v1: Router<BoxRoute>) -> Router<BoxRoute> {
+pub fn apply_routes() -> Router<BoxRoute> {
+    let router = Router::new();
     let restrict_layer = RequireAuthorizationLayer::custom(Restrict::new());
-    v1.route("/post", get(all.layer(restrict_layer.clone())).post(create))
+    router.route("/post", get(all).post(create.layer(restrict_layer.clone())))
         .route(
             "/post/:id",
             get(one).put(update.layer(restrict_layer.clone())),
