@@ -1,11 +1,13 @@
 pub mod serde_format;
-mod error;
+mod api_error;
 mod util;
 mod cors;
 pub mod jwt;
 pub mod restrict;
+mod handle_error;
 
-pub use error::APIError;
-pub use error::APIResult;
+pub use api_error::APIError;
+pub use api_error::APIResult;
 pub use util::*;
 pub use cors::Cors;
+pub use handle_error::handle_error;
