@@ -1,9 +1,9 @@
 use app::{api::apply_routes, util::handle_error};
-use axum::Server;
+use axum::{error_handling::HandleErrorLayer, Server};
 use dotenv::dotenv;
 use std::{env, net::SocketAddr, time::Duration};
-use tower::{timeout::TimeoutLayer, ServiceBuilder};
-use tower_http::{compression::CompressionLayer};
+use tower::ServiceBuilder;
+use tower_http::compression::CompressionLayer;
 
 #[tokio::main]
 async fn main() {
@@ -21,10 +21,12 @@ async fn main() {
         .init();
 
     let middlewares = ServiceBuilder::new()
-        .layer(TimeoutLayer::new(Duration::from_secs(10)))
         // .layer(TraceLayer::new_for_http())
-        .layer(CompressionLayer::new());
-    let routes = apply_routes().layer(middlewares).handle_error(handle_error);
+        .layer(HandleErrorLayer::new(handle_error))
+        .layer(CompressionLayer::new())
+        .timeout(Duration::from_secs(10));
+
+    let routes = apply_routes().layer(middlewares);
 
     let port = env::var("APP_PORT").expect("environment variable APP_PORT must be set");
     let port = port

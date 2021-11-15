@@ -1,4 +1,4 @@
-use axum::{handler::get, routing::BoxRoute, Router};
+use axum::{ routing::{ get }, Router};
 
 macro_rules! reject {
     ($e: expr) => {
@@ -18,8 +18,8 @@ async fn index() -> &'static str {
     "hello world"
 }
 
-pub fn apply_routes() -> Router<BoxRoute> {
+pub fn apply_routes() -> Router {
     let prefix = "/api/v1";
     let router = Router::new().route("/", get(index));
-    router.nest(prefix, v1::apply_routes()).boxed()
+    router.nest(prefix, v1::apply_routes())
 }

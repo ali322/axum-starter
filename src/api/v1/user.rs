@@ -8,8 +8,7 @@ use crate::{
 };
 use axum::{
     extract::{Extension, Path, Query},
-    handler::{get, post, put},
-    routing::BoxRoute,
+    routing::{get, post, put},
     Json, Router,
 };
 use tower_http::auth::RequireAuthorizationLayer;
@@ -71,14 +70,14 @@ async fn me(Extension(auth): Extension<Auth>) -> APIResult {
     Ok(reply!(user))
 }
 
-pub fn apply_routes() -> Router<BoxRoute> {
+pub fn apply_routes() -> Router {
     let router = Router::new();
     let restrict_layer = RequireAuthorizationLayer::custom(Restrict::new());
-    router.route("/user", get(all))
+    router
+        .route("/user", get(all))
         .route("/user/:id", put(update).get(one))
         .route("/change/password", post(change_password))
         .route("/reset/:id/password", post(reset_password))
         .route("/me", get(me))
         .layer(restrict_layer)
-        .boxed()
 }

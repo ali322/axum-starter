@@ -6,12 +6,7 @@ use crate::{
     },
     util::{restrict::Restrict, APIResult},
 };
-use axum::{
-    extract::Path,
-    handler::{get, Handler},
-    routing::BoxRoute,
-    Json, Router,
-};
+use axum::{extract::Path, handler::Handler, routing::get, Json, Router};
 use tower_http::auth::RequireAuthorizationLayer;
 use validator::Validate;
 
@@ -37,14 +32,14 @@ async fn update(Path(id): Path<i32>, Json(body): Json<UpdatePost>) -> APIResult 
     Ok(reply!(updated))
 }
 
-pub fn apply_routes() -> Router<BoxRoute> {
+pub fn apply_routes() -> Router {
     let router = Router::new();
     let restrict_layer = RequireAuthorizationLayer::custom(Restrict::new());
-    router.route("/post", get(all).post(create.layer(restrict_layer.clone())))
+    router
+        .route("/post", get(all).post(create.layer(restrict_layer.clone())))
         .route(
             "/post/:id",
             get(one).put(update.layer(restrict_layer.clone())),
         )
         .layer(restrict_layer)
-        .boxed()
 }

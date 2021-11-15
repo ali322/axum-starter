@@ -1,4 +1,4 @@
-use axum::{handler::post, routing::BoxRoute, Json, Router};
+use axum::{routing::post, Json, Router};
 use validator::Validate;
 
 use crate::{
@@ -51,9 +51,9 @@ async fn login(Json(body): Json<LoginUser>) -> APIResult {
     }))
 }
 
-pub fn apply_routes() -> Router<BoxRoute> {
+pub fn apply_routes() -> Router {
     let router = Router::new();
-    router.route("/register", post(register))
+    router
+        .route("/register", post(register))
         .route("/login", post(login))
-        .boxed()
 }
