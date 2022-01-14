@@ -36,10 +36,14 @@ pub fn apply_routes() -> Router {
     let router = Router::new();
     let restrict_layer = RequireAuthorizationLayer::custom(Restrict::new());
     router
-        .route("/post", get(all).post(create.layer(restrict_layer.clone())))
+        .route("/post", get(all).post(create
+          .layer(restrict_layer.clone())
+        ))
         .route(
             "/post/:id",
-            get(one).put(update.layer(restrict_layer.clone())),
+            get(one).put(update
+              .layer(restrict_layer.clone())
+            ),
         )
         .layer(restrict_layer)
 }

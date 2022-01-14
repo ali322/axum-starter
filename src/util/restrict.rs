@@ -1,7 +1,8 @@
-use crate::util::jwt::{decode_token, Auth};
+use crate::util::jwt::{decode_token};
 use axum::{
-    body::{box_body, Body, BoxBody},
-    http::{Request, Response, StatusCode},
+    body::{self, BoxBody},
+    http::{Request, StatusCode},
+    response::Response,
 };
 use serde_json::json;
 use tower_http::auth::AuthorizeRequest;
@@ -21,18 +22,19 @@ impl Restrict {
     }
 }
 
-impl AuthorizeRequest for Restrict {
-    type Output = Auth;
+impl<B> AuthorizeRequest<B> for Restrict {
     type ResponseBody = BoxBody;
-    fn authorize<B>(&mut self, req: &Request<B>) -> Option<Self::Output> {
-        let mut output: Option<Self::Output> = None;
+    fn authorize(&mut self, req: &mut Request<B>) -> Result<(), Response<Self::ResponseBody>> {
         if let Some(auth_string) = req.headers().get(AUTH_HEADER) {
             let auth_str = auth_string.to_str().unwrap();
             if auth_str.starts_with("Bearer ") {
                 let auth_str = auth_str.replace("Bearer ", "");
                 let decoded = decode_token(&auth_str);
                 match decoded {
-                    Ok(token_data) => output = Some(token_data.claims.auth),
+                    Ok(token_data) => {
+                      let auth = token_data.claims.auth;
+                      req.extensions_mut().insert(auth);
+                    },
                     Err(e) => {
                         self.reject_reason = Some(format!("请求头 Authorization 解析错误: {:?}", e))
                     }
@@ -43,16 +45,16 @@ impl AuthorizeRequest for Restrict {
         } else {
             self.reject_reason = Some("请求头 Authorization 不能为空".to_string());
         }
-        output
-    }
-    fn on_authorized<B>(&mut self, req: &mut Request<B>, output: Self::Output) {
-        req.extensions_mut().insert(output);
-    }
-    fn unauthorized_response<B>(&mut self, _req: &Request<B>) -> Response<Self::ResponseBody> {
-        let json_body = json!({"code":-1, "message": self.reject_reason}).to_string();
-        let body = box_body(Body::from(json_body));
-        let mut res = Response::new(body);
-        *res.status_mut() = StatusCode::OK;
-        res
+        if let Some(reject_reason) = self.reject_reason.clone() {
+          let json_body = json!({"code":-1, "message": reject_reason}).to_string();
+                let body = body::boxed(body::Full::from(json_body));
+                let unauthorized_response = Response::builder()
+                    .status(StatusCode::OK)
+                    .body(body)
+                    .unwrap();
+                    Err(unauthorized_response)
+        } else {
+          Ok(())
+        }
     }
 }

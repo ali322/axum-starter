@@ -1,8 +1,8 @@
 use crate::repository::DBError;
 use axum::{
-    body::Body,
-    http::{response::Response, StatusCode},
-    response::{IntoResponse, Json},
+    body,
+    http::{StatusCode},
+    response::{IntoResponse, Response, Json},
 };
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -59,13 +59,12 @@ fn format_validator_errors(e: &ValidationErrors) -> HashMap<String, String> {
 }
 
 impl IntoResponse for APIError {
-    type Body = Body;
-    type BodyError = <Self::Body as axum::body::HttpBody>::Error;
-    fn into_response(self) -> Response<Body> {
+    fn into_response(self) -> Response {
         let (code, message) = match self {
             _ => (-2, json!(self)),
         };
-        let body = Body::from(json!({"code": code, "message": message}).to_string());
+        let json_body = json!({"code": code, "message": message}).to_string();
+        let body = body::boxed(body::Full::from(json_body));
         Response::builder()
             .status(StatusCode::OK)
             .body(body)

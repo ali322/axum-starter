@@ -1,5 +1,5 @@
 use app::{api::apply_routes, util::handle_error};
-use axum::{error_handling::HandleErrorLayer, Server};
+use axum::{error_handling::HandleErrorLayer, Server, Router, routing::get};
 use dotenv::dotenv;
 use std::{env, net::SocketAddr, time::Duration};
 use tower::ServiceBuilder;

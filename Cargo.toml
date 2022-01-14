@@ -8,7 +8,7 @@ edition = "2018"
 [dependencies]
 app_macro = {path = "app_macro"}
 async-trait = "0.1.51"
-axum = "0.3.3"
+axum = "0.4.4"
 bcrypt = "0.10.1"
 chrono = { version = "0.4.19", features = ["serde"] }
 dotenv = "0.15.0"
@@ -19,8 +19,8 @@ serde = { version = "1.0.130", features = ["derive"] }
 serde_json = { version = "1.0.67", features = ["preserve_order"]}
 thiserror = "1.0.28"
 tokio = { version = "1.10.1", features = ["full"] }
-tower = { version = "0.4.9", features = ["full"] }
-tower-http = { version = "0.1.1", features = ["trace", "auth", "compression"] }
+tower = { version = "0.4.11", features = ["full"] }
+tower-http = { version = "0.2.0", features = ["trace", "auth", "compression-gzip"] }
 tracing = "0.1.26"
 tracing-subscriber = "0.2.20"
 tracing-appender = "0.1.2"
