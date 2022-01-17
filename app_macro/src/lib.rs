@@ -15,16 +15,12 @@ fn impl_dao(ast: &syn::DeriveInput) -> TokenStream {
     let gen = quote! {
       #[async_trait]
       impl Dao for #name{
-        async fn exists<T>(id: T) -> Result<Option<Self>, DBError> where T: Serialize + Send + Sync {
+        async fn find_by_id<T>(id: T) -> Result<Option<Self>, DBError> where T: Serialize + Send + Sync {
             POOL.fetch_by_column("id", &id).await
         }
         async fn find_one(w: Wrapper) -> Result<Self, DBError> {
             let w = w.to_owned().limit(1);
             POOL.fetch_by_wrapper::<Self>(w).await
-        }
-        async fn find_by_id<T>(id: T) -> Result<Self, DBError> where T: Serialize + Send + Sync {
-            let w = POOL.new_wrapper().eq("id", id);
-            Self::find_one(w).await
         }
         async fn find_list(w: Wrapper) -> Result<Vec<Self>, DBError> {
             POOL.fetch_list_by_wrapper(w).await

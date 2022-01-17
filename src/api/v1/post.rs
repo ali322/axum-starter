@@ -4,10 +4,13 @@ use crate::{
         dto::{NewPost, UpdatePost},
         Dao,
     },
-    util::{restrict::Restrict, APIResult},
+    util::{jwt::Auth, APIResult},
 };
-use axum::{extract::Path, handler::Handler, routing::get, Json, Router};
-use tower_http::auth::RequireAuthorizationLayer;
+use axum::{
+    extract::{Extension, Path},
+    routing::{get, post, put},
+    Json, Router,
+};
 use validator::Validate;
 
 async fn all() -> APIResult {
@@ -16,34 +19,35 @@ async fn all() -> APIResult {
 }
 
 async fn one(Path(id): Path<i32>) -> APIResult {
-    let one = Post::find_by_id(id).await?;
+    let one = match Post::find_by_id(&id).await? {
+        Some(val) => val,
+        None => return Err(reject!("文章不存在")),
+    };
     Ok(reply!(one))
 }
 
-async fn create(Json(body): Json<NewPost>) -> APIResult {
+async fn create(Json(mut body): Json<NewPost>, Extension(auth): Extension<Auth>) -> APIResult {
     body.validate()?;
+    body.user_id = auth.id;
     let created = body.create().await?;
     Ok(reply!(created))
 }
 
 async fn update(Path(id): Path<i32>, Json(body): Json<UpdatePost>) -> APIResult {
     body.validate()?;
-    let updated = body.save(id).await?;
+    let mut one = match Post::find_by_id(&id).await? {
+      Some(val) => val,
+      None => return Err(reject!("文章不存在")),
+    };
+    let updated = body.save(&mut one).await?;
     Ok(reply!(updated))
 }
 
 pub fn apply_routes() -> Router {
     let router = Router::new();
-    let restrict_layer = RequireAuthorizationLayer::custom(Restrict::new());
     router
-        .route("/post", get(all).post(create
-          .layer(restrict_layer.clone())
-        ))
-        .route(
-            "/post/:id",
-            get(one).put(update
-              .layer(restrict_layer.clone())
-            ),
-        )
-        .layer(restrict_layer)
+        .route("/public/post", get(all))
+        .route("/public/post/:id", get(one))
+        .route("/post", post(create))
+        .route("/post/:id", put(update))
 }

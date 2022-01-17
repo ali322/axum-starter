@@ -1,5 +1,5 @@
 use crate::{
-    repository::{dao::User, DBError, Dao, POOL},
+    repository::{dao::User, vo, DBError, Dao, POOL},
     util::now,
 };
 use bcrypt::{hash, verify};
@@ -54,12 +54,11 @@ pub struct UpdateUser {
 }
 
 impl UpdateUser {
-    pub async fn save(self, id: &str) -> Result<User, DBError> {
-        let w = POOL.new_wrapper().eq("id", id);
-        let mut dao = User::find_one(w.clone()).await?;
-        dao.email = self.email;
+    pub async fn save(self, dao: &mut User) -> Result<vo::User, DBError> {
+      dao.email = self.email;
+      let w = POOL.new_wrapper().eq("id", &dao.id);
         User::update_one(&dao, w).await?;
-        Ok(dao)
+        Ok(dao.to_owned().into())
     }
 }
 

@@ -1,5 +1,5 @@
-use app::{api::apply_routes, util::handle_error};
-use axum::{error_handling::HandleErrorLayer, Server, Router, routing::get};
+use app::{api::apply_routes, middleware::handle_error, repository::init_db};
+use axum::{error_handling::HandleErrorLayer, Server};
 use dotenv::dotenv;
 use std::{env, net::SocketAddr, time::Duration};
 use tower::ServiceBuilder;
@@ -19,6 +19,7 @@ async fn main() {
         .json()
         .with_writer(non_blocking)
         .init();
+    init_db().await;
 
     let middlewares = ServiceBuilder::new()
         // .layer(TraceLayer::new_for_http())

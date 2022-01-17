@@ -1,5 +1,5 @@
 use crate::{
-    repository::{dao::Post, DBError, Dao, POOL},
+    repository::{dao::Post, vo, DBError, Dao, POOL},
     util::now,
 };
 use serde::{Deserialize, Serialize};
@@ -10,6 +10,7 @@ pub struct NewPost {
     #[validate(length(min = 1, max = 100))]
     pub title: String,
     pub content: String,
+    #[serde(skip_deserializing)]
     pub user_id: String,
 }
 
@@ -37,12 +38,11 @@ pub struct UpdatePost {
 }
 
 impl UpdatePost {
-    pub async fn save(&self, id: i32) -> Result<Post, DBError> {
-        let mut dao: Post = Post::find_by_id(id).await?;
+    pub async fn save(&self, dao:&mut Post) -> Result<vo::Post, DBError> {
         dao.title = self.title.clone();
         dao.content = self.content.clone();
-        let w = POOL.new_wrapper().eq("id", id);
+        let w = POOL.new_wrapper().eq("id", dao.id);
         Post::update_one(&dao, w).await?;
-        Ok(dao)
+        Ok(dao.to_owned().into())
     }
 }
