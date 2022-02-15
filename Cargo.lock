@@ -53,13 +53,14 @@ dependencies = [
  "app_macro",
  "async-trait",
  "axum",
+ "axum-macros",
  "bcrypt",
  "chrono",
  "dotenv",
  "futures",
  "jsonwebtoken",
  "once_cell",
- "rbatis 3.0.30",
+ "rbatis 3.0.31",
  "rbson",
  "regex",
  "serde",
@@ -349,6 +350,18 @@ dependencies = [
  "http",
  "http-body",
  "mime",
+]
+
+[[package]]
+name = "axum-macros"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "11227b1a87dc0f86992e3f0774da56aed9f38e9d307abbb546b7754027912979"
+dependencies = [
+ "heck 0.4.0",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -962,6 +975,12 @@ checksum = "6d621efb26863f0e9924c6ac577e8275e5e6b77455db64ffa6c65c904e9e132c"
 dependencies = [
  "unicode-segmentation",
 ]
+
+[[package]]
+name = "heck"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2540771e65fc8cb83cd6e8a237f70c319bd5c29f78ed1084ba5d50eeac86f7f9"
 
 [[package]]
 name = "hermit-abi"
@@ -1710,9 +1729,9 @@ dependencies = [
 
 [[package]]
 name = "rbatis"
-version = "3.0.30"
+version = "3.0.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b8c968bd15606738295d8b71dca35cfef3bb1a124af89dab45a18ed83b19975"
+checksum = "c7d3ebffcbf93beb72bf3854c590b027e8590069d5cb0d9e614ed5adc9e349a5"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1722,7 +1741,7 @@ dependencies = [
  "log",
  "once_cell",
  "rand",
- "rbatis-core 3.0.20",
+ "rbatis-core 3.0.21",
  "rbatis-macro-driver 3.0.5",
  "rbatis_sql 3.0.13",
  "rbson",
@@ -1753,9 +1772,9 @@ dependencies = [
 
 [[package]]
 name = "rbatis-core"
-version = "3.0.20"
+version = "3.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2cd0da1efe628da94506a15dc8e628a6c25b6d8de77fb2d51149ac9c7893153d"
+checksum = "ac21224137c4c885210ab3fd659ecd440806de10ea49ce43461d83acf3d54c1a"
 dependencies = [
  "base64 0.13.0",
  "bigdecimal",
@@ -2376,7 +2395,7 @@ version = "0.4.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dcb5ae327f9cc13b68763b5749770cb9e048a99bd9dfdfa58d0cf05d5f64afe0"
 dependencies = [
- "heck",
+ "heck 0.3.3",
  "proc-macro-error",
  "proc-macro2",
  "quote",
