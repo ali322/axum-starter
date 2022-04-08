@@ -8,8 +8,8 @@ edition = "2018"
 [dependencies]
 app_macro = {path = "app_macro"}
 async-trait = "0.1.51"
-axum = "0.4.5"
-axum-macros = "0.1.0"
+axum = "0.5.1"
+axum-macros = "0.2.0"
 bcrypt = "0.10.1"
 chrono = { version = "0.4.19", features = ["serde"] }
 dotenv = "0.15.0"

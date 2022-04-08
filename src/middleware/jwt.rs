@@ -38,7 +38,7 @@ fn is_method_allowed(method: &str, methods: &str) -> bool {
 
 fn match_rules(rules: HashMap<String, String>, uri: String, method: String) -> bool {
     for (rule, methods) in rules {
-      println!("{} {}", rule, &uri);
+      // println!("{} {}", rule, &uri);
       let reg = Regex::new(&rule).unwrap();
       if reg.is_match(&uri) {
         return is_method_allowed(&method, &methods)

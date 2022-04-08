@@ -309,9 +309,9 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
 name = "axum"
-version = "0.4.5"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1dbbc81d15ddf33148615b778836b525dbae4e0731710294b2c484e80c4858f7"
+checksum = "47594e438a243791dba58124b6669561f5baa14cb12046641d8008bf035e5a25"
 dependencies = [
  "async-trait",
  "axum-core",
@@ -321,6 +321,7 @@ dependencies = [
  "http",
  "http-body",
  "hyper",
+ "itoa 1.0.1",
  "matchit",
  "memchr",
  "mime",
@@ -331,7 +332,6 @@ dependencies = [
  "serde_urlencoded",
  "sync_wrapper",
  "tokio",
- "tokio-util",
  "tower",
  "tower-http",
  "tower-layer",
@@ -340,9 +340,9 @@ dependencies = [
 
 [[package]]
 name = "axum-core"
-version = "0.1.1"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ca6c0b218388a7ed6a8d25e94f7dea5498daaa4fd8c711fb3ff166041b06fda"
+checksum = "9a671c9ae99531afdd5d3ee8340b8da547779430689947144c140fc74a740244"
 dependencies = [
  "async-trait",
  "bytes",
@@ -354,9 +354,9 @@ dependencies = [
 
 [[package]]
 name = "axum-macros"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11227b1a87dc0f86992e3f0774da56aed9f38e9d307abbb546b7754027912979"
+checksum = "63bcb0d395bc5dd286e61aada9fc48201eb70e232f006f9d6c330c9db2f256f5"
 dependencies = [
  "heck 0.4.0",
  "proc-macro2",
@@ -1020,7 +1020,7 @@ checksum = "1323096b05d41827dadeaee54c9981958c0f94e670bc94ed80037d1a7b8b186b"
 dependencies = [
  "bytes",
  "fnv",
- "itoa",
+ "itoa 0.4.8",
 ]
 
 [[package]]
@@ -1066,7 +1066,7 @@ dependencies = [
  "http-body",
  "httparse",
  "httpdate",
- "itoa",
+ "itoa 0.4.8",
  "pin-project-lite",
  "socket2",
  "tokio",
@@ -1134,6 +1134,12 @@ name = "itoa"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
+
+[[package]]
+name = "itoa"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1aab8fc367588b89dcee83ab0fd66b72b50b72fa1904d7095045ace2b0c81c35"
 
 [[package]]
 name = "js-sys"
@@ -1240,9 +1246,9 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
 name = "matchit"
-version = "0.4.4"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58b6f41fdfbec185dd3dff58b51e323f5bc61692c0de38419a957b0dcfccca3c"
+checksum = "73cbba799671b762df5a175adf59ce145165747bb891505c43d09aefbbf38beb"
 
 [[package]]
 name = "memchr"
@@ -2083,7 +2089,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0f690853975602e1bfe1ccbf50504d67174e3bcf340f23b5ea9992e0587a52d8"
 dependencies = [
  "indexmap",
- "itoa",
+ "itoa 0.4.8",
  "ryu",
  "serde",
 ]
@@ -2095,7 +2101,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "edfa57a7f8d9c1d260a549e7224100f6c43d43f9103e06dd8b4095a9b2b43ce9"
 dependencies = [
  "form_urlencoded",
- "itoa",
+ "itoa 0.4.8",
  "ryu",
  "serde",
 ]
@@ -2264,7 +2270,7 @@ dependencies = [
  "hex",
  "indexmap",
  "ipnetwork",
- "itoa",
+ "itoa 0.4.8",
  "libc",
  "log",
  "mac_address",
@@ -2636,6 +2642,7 @@ dependencies = [
  "pin-project-lite",
  "tokio",
  "tokio-util",
+ "tower",
  "tower-layer",
  "tower-service",
  "tracing",

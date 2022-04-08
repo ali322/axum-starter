@@ -12,6 +12,8 @@ mod user;
 pub fn apply_routes() -> Router {
   let mut unless = HashMap::new();
   unless.insert(r"^/public".to_string(), "get|post".to_string());
+  unless.insert(r"/register".to_string(), "post".to_string());
+  unless.insert(r"/login".to_string(), "post".to_string());
   let restrict_layer = RequireAuthorizationLayer::custom(JWT::new(unless));
     auth::apply_routes()
         .merge(user::apply_routes())
