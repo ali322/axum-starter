@@ -16,7 +16,7 @@ pub struct NewPost {
 
 impl NewPost {
     pub async fn create(&self) -> Result<Post, DBError> {
-        let dao = Post {
+        let mut dao = Post {
             id: None,
             title: self.title.clone(),
             content: self.content.clone(),
@@ -25,7 +25,8 @@ impl NewPost {
             updated_at: now(),
             is_deleted: 0,
         };
-        Post::create_one(&dao).await?;
+        let id = Post::create_one(&dao).await?;
+        dao.id = Some(id as i32);
         Ok(dao)
     }
 }

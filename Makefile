@@ -4,7 +4,7 @@ install:
 	@$(MUSL_BUILDER) sudo chown -R rust:rust /home/rust/.cargo/git /home/rust/.cargo/registry
 
 build:
-	@$(MUSL_BUILDER) cargo build --release
+	@cargo build --release --target=x86_64-unknown-linux-musl
 start:
 	@cargo watch -x run
 

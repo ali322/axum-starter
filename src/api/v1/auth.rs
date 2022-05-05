@@ -44,7 +44,7 @@ async fn login(Json(body): Json<LoginUser>) -> APIResult {
     let token = jwt::generate_token(Auth {
         id: user.id.clone(),
         username: user.username.clone(),
-        is_admin: false,
+        is_admin: true,
     });
     Ok(reply!({
       "token": token, "user": user
