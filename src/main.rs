@@ -11,7 +11,6 @@ async fn main() {
         env::set_var("RUST_LOG", "app=DEBUG")
     }
     dotenv().ok();
-
     let log_path = std::env::var("LOG_PATH").expect("environment variable LOG_PATH must be set");
     let file_appender = tracing_appender::rolling::daily(log_path, "app.log");
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
